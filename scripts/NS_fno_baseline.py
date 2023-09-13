@@ -117,4 +117,4 @@ for ep in range(1, epochs + 1):
     t2 = default_timer()
     scheduler.step()
     print("Epoch " + str(ep) + " completed in " + "{0:.{1}f}".format(t2-t1, 3) + " seconds. Train err:", "{0:.{1}f}".format(train_loss/(ntrain*T), 3), "Test L2 err:", "{0:.{1}f}".format(test_l2/(ntest*T), 3), "Test H1 err:",  "{0:.{1}f}".format(test_h1/(ntest*T), 3), "Test H2 err:",  "{0:.{1}f}".format(test_h2/(ntest*T), 3))
-    wandb.log({'epoch': ep, 'train_loss': train_loss/(ntrain*T), 'test_l2': test_l2/(ntest*T), 'test_h1': test_h1/(ntest*T), 'test_h2': test_h2/(ntest*T)})
+    #wandb.log({'epoch': ep, 'train_loss': train_loss/(ntrain*T), 'test_l2': test_l2/(ntest*T), 'test_h1': test_h1/(ntest*T), 'test_h2': test_h2/(ntest*T)})

@@ -8,7 +8,7 @@ import wandb
 import torch
 import matplotlib.pyplot as plt
 import sys
-from neuralop.models import TFNO
+from neuralop.models import TFNO, FNO2d
 from neuralop import Trainer
 from neuralop.utils import count_params
 from neuralop import LpLoss, H1Loss
@@ -26,6 +26,11 @@ import scipy.io
 torch.manual_seed(0)
 np.random.seed(0)
 
+wandb.init(
+    entity='research-pino_ifno',
+    project='re5000',
+    name='baseline'
+)
 # Main
 ntrain = 90
 ntest = 10
@@ -78,7 +83,9 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(64, 64), hidden_channels=64, in_channels=1, out_channels=1)
+model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1)
+#model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
+model.to(device)
 print(count_params(model))
 
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-4)
@@ -103,7 +110,7 @@ sys.stdout.flush()
 trainer = Trainer(model, n_epochs=20,
                   device=device,
                   mg_patching_levels=0,
-                  wandb_log=False,
+                  wandb_log=True,
                   log_test_interval=3,
                   use_distributed=False,
                   verbose=True, dataset_name='Re5000')
@@ -118,52 +125,5 @@ trainer.train(train_loader, test_loader,
               training_loss=train_loss,
               eval_losses=eval_losses)
 
+wandb.finish()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""
-# Training
-for ep in range(1, epochs + 1):
-    model.train()
-    t1 = default_timer()
-    train_loss = 0
-    for x, y in train_loader:
-        x = x.to(device).view(batch_size, S, S, in_dim)
-        y = y.to(device).view(batch_size, S, S, out_dim)
-
-        out = model(x).reshape(batch_size, S, S, out_dim)
-        loss = myloss(out, y)
-        train_loss += loss.item()
-
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-    test_l2 = 0
-    test_h1 = 0
-    test_h2 = 0
-    with torch.no_grad():
-        for x, y in test_loader:
-            x = x.to(device).view(batch_size, S, S, in_dim)
-            y = y.to(device).view(batch_size, S, S, out_dim)
-
-            out = model(x).reshape(batch_size, S, S, out_dim)
-            test_l2 += lploss(out, y).item()
-            test_h1 += h1loss(out, y).item()
-            test_h2 += h2loss(out, y).item()
-
-    t2 = default_timer()
-    scheduler.step()
-    print("Epoch " + str(ep) + " completed in " + "{0:.{1}f}".format(t2-t1, 3) + " seconds. Train err:", "{0:.{1}f}".format(train_loss/(ntrain*T), 3), "Test L2 err:", "{0:.{1}f}".format(test_l2/(ntest*T), 3), "Test H1 err:",  "{0:.{1}f}".format(test_h1/(ntest*T), 3), "Test H2 err:",  "{0:.{1}f}".format(test_h2/(ntest*T), 3))
-    wandb.log({'epoch': ep, 'train_loss': train_loss/(ntrain*T), 'test_l2': test_l2/(ntest*T), 'test_h1': test_h1/(ntest*T), 'test_h2': test_h2/(ntest*T)})"""
