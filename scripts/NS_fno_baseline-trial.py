@@ -31,7 +31,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='baseline-64modes'
+    name='lossgap-64modes'
 )
 # Main
 ntrain = 90
@@ -86,7 +86,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1)
+model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1, incremental_n_modes=(2,2))
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
@@ -117,7 +117,7 @@ trainer = Trainer(model, n_epochs=500,
                   log_test_interval=3,
                   use_distributed=False,
                   verbose=True, dataset_name='Re5000',
-                  incremental_loss_gap=False)
+                  incremental_loss_gap=True)
 
 
 trainer.train(train_loader, test_loader,
