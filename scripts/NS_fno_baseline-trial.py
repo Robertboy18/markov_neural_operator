@@ -86,7 +86,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1, incremental_n_modes=(2,2))
+model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1)
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
@@ -117,7 +117,7 @@ trainer = Trainer(model, n_epochs=1,
                   log_test_interval=3,
                   use_distributed=False,
                   verbose=True, dataset_name='Re5000',
-                  incremental_loss_gap=True)
+                  incremental_loss_gap=False)
 
 
 trainer.train(train_loader, test_loader,
