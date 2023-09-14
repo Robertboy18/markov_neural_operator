@@ -110,7 +110,7 @@ print(f'\n * Test: {eval_losses}')
 sys.stdout.flush()
 
 
-trainer = Trainer(model, n_epochs=1,
+trainer = Trainer(model, n_epochs=500,
                   device=device,
                   mg_patching_levels=0,
                   wandb_log=True,
