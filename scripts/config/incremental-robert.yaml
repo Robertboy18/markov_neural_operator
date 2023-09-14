@@ -1,0 +1,108 @@
+default: &DEFAULT
+
+  #General
+  verbose: True
+  arch: 'fno'
+
+  distributed:
+    use_distributed: False
+    wireup_info: 'mpi'
+    wireup_store: 'tcp'
+    model_parallel_size: 2
+    seed: 666
+
+  # FNO related
+  fno:
+    data_channels: 3
+    n_modes: (64, 64)
+    hidden_channels: 32
+    projection_channels: 32
+    incremental_n_modes: (2, 2)
+  
+  data:
+    folder: /home/robert/data/navierstokes_new/nsforcing_512_train1.pt
+    batch_size: 16
+    n_train: 10
+    train_resolution: 512
+    n_tests: [10]
+    test_resolutions: [512] #, 1024] 
+    test_batch_sizes: [16] #, 1]
+    positional_encoding: True
+
+    encode_input: True
+    encode_output: False
+    num_workers: 0
+    pin_memory: False
+    persistent_workers: False
+
+  # Optimizer
+  opt:
+    n_epochs: 10
+    learning_rate: 1e-3
+    training_loss: 'h1'
+    weight_decay: 1e-4
+    amp_autocast: False
+
+    scheduler: 'StepLR' #'StepLR' # Or 'CosineAnnealingLR' OR 'ReduceLROnPlateau'
+    step_size: 100
+    gamma: 0.5
+    base_lr: 1e-4
+    max_lr: 1e-2
+    cycle_momentum: False
+    mode: "triangular2"
+    last_epoch: -1
+    step_size_up: 6000 # 120 * 100 //2 
+    step_size_down: 6000
+
+  # Patching
+  patching:
+    levels: 0
+    padding: 0 #.1
+    stitching: True
+
+  # incremental paramaters
+  incremental:
+    incremental_grad:
+      use: False
+      init_modes: 6
+      buffer_modes: 5
+      grad_explained_ratio_threshold: 0.99
+      max_iter: 1
+      grad_max_iter: 10
+    
+    incremental_loss_gap:
+      use: False
+      init_modes: 1
+      eps: 0.01
+
+    incremental_resolution:
+      use: True
+      epoch_gap: 5
+
+    dataset:
+      SmallDarcy: [1]
+      Darcy: [8, 4, 2, 1]
+      Burgers: [256, 64, 16, 8, 1]
+      NavierStokes: [8, 4, 2, 1]
+      Vorticity: [128, 64, 32, 16, 1]
+
+  # Weights and biases
+  wandb:
+    log: True
+    name: navierstokes-incremental # If None, config will be used but you can override it here
+    group: '' 
+    project: "navierstokes-high-resolution"
+    entity: "research-pino_ifno" # put your username here
+    sweep: False
+    log_output: True
+    log_test_interval: 5
+
+  n_params_baseline: None
+
+  checkpoint:
+    directory: '/ngc_workspace/jiawei/projects/neuraloperator/'
+    name: 'checkpoints'
+    interval: 5
+    save:
+    last_epoch: 0
+    sub_list_index: 0

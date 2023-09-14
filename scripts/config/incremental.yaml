@@ -1,0 +1,108 @@
+default: &DEFAULT
+
+  #General
+  verbose: True
+  arch: 'fno'
+
+  distributed:
+    use_distributed: True
+    wireup_info: 'mpi'
+    wireup_store: 'tcp'
+    model_parallel_size: 1
+    seed: 666
+
+  # FNO related
+  fno:
+    data_channels: 3
+    n_modes: (64, 64)
+    hidden_channels: 128
+    projection_channels: 128
+    incremental_n_modes: (2, 2)
+  
+  data:
+    folder: /high_res_ns_dataset
+    batch_size: 8
+    n_train: 2000
+    train_resolution: 512
+    n_tests: [2000]
+    test_resolutions: [512] #, 1024] 
+    test_batch_sizes: [8] #, 1]
+    positional_encoding: True
+
+    encode_input: False
+    encode_output: False
+    num_workers: 0
+    pin_memory: False
+    persistent_workers: False
+
+  # Optimizer
+  opt:
+    n_epochs: 1000
+    learning_rate: 1e-3
+    training_loss: 'h1'
+    weight_decay: 1e-4
+    amp_autocast: False
+
+    scheduler: 'StepLR' #'StepLR' # Or 'CosineAnnealingLR' OR 'ReduceLROnPlateau'
+    step_size: 150
+    gamma: 0.5
+    base_lr: 1e-3
+    max_lr: 1e-2
+    cycle_momentum: False
+    mode: "triangular2"
+    last_epoch: -1
+    step_size_up: 50 # 120 * 100 //2 
+    step_size_down: 50
+
+  # Patching
+  patching:
+    levels: 0
+    padding: 0 #.1
+    stitching: True
+
+  # incremental paramaters
+  incremental:
+    incremental_grad:
+      use: False
+      init_modes: 6
+      buffer_modes: 5
+      grad_explained_ratio_threshold: 0.999
+      max_iter: 1
+      grad_max_iter: 10
+    
+    incremental_loss_gap:
+      use: False
+      init_modes: 1
+      eps: 0.001
+
+    incremental_resolution:
+      use: False
+      epoch_gap: 100
+
+    dataset:
+      SmallDarcy: [1]
+      Darcy: [8, 4, 2, 1]
+      Burgers: [256, 64, 16, 8, 1]
+      NavierStokes: [8, 4, 2, 1]
+      Vorticity: [128, 64, 32, 16, 1]
+
+  # Weights and biases
+  wandb:
+    log: True
+    name: turbulence-1timestep-128-128 # If None, config will be used but you can override it here
+    group: '' 
+    project: "turbulence"
+    entity: "research-pino_ifno" # put your username here
+    sweep: False
+    log_output: True
+    log_test_interval: 1
+
+  n_params_baseline: None
+  
+  checkpoint:
+    directory: '/ngc_workspace/jiawei/projects/checkpoint_ns/'
+    name: 'checkpoints'
+    interval: 1000
+    save: False
+    last_epoch: 0
+    sub_list_index: 0
