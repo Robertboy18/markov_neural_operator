@@ -31,7 +31,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='incremental-0.99-64modes'
+    name='incremental-0.001-64modes'
 )
 # Main
 ntrain = 90
@@ -45,8 +45,8 @@ out_dim = 1
 
 batch_size = 50
 epochs = 50
-learning_rate = 0.0005
-scheduler_step = 10
+learning_rate = 0.001
+scheduler_step = 100
 scheduler_gamma = 0.5
 
 loss_k = 0 # H0 Sobolev loss = L2 loss
@@ -117,7 +117,7 @@ trainer = Trainer(model, n_epochs=500,
                   log_test_interval=3,
                   use_distributed=False,
                   verbose=True, dataset_name='Re5000',
-                  incremental=True)
+                  incremental_loss_gap=True)
 
 
 trainer.train(train_loader, test_loader,
