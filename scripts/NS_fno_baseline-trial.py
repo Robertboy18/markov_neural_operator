@@ -117,7 +117,7 @@ trainer = Trainer(model, n_epochs=500,
                   log_test_interval=3,
                   use_distributed=False,
                   verbose=True, dataset_name='Re5000',
-                  incremental_loss_gap=True)
+                  incremental=True)
 
 
 trainer.train(train_loader, test_loader,
