@@ -31,7 +31,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='resolution+lossgap-64modes'
+    name='resolution+incremental-64modes'
 )
 # Main
 ntrain = 90
@@ -117,7 +117,7 @@ trainer = Trainer(model, n_epochs=500,
                   log_test_interval=3,
                   use_distributed=False,
                   verbose=True, dataset_name='Re5000',
-                  incremental_loss_gap=True,
+                  incremental=True,
                   incremental_resolution=True)
 
 
