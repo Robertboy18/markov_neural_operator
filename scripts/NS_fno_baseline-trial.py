@@ -31,7 +31,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='baseline-128modes'
+    name='baseline-128modes-256'
 )
 # Main
 ntrain = 90
@@ -55,7 +55,7 @@ loss_group = True
 print(epochs, learning_rate, scheduler_step, scheduler_gamma)
 
 sub = 1 # spatial subsample
-S = 128
+S = 256
 
 T_in = 100 # skip first 100 seconds of each trajectory to let trajectory reach attractor
 T = 400 # seconds to extract from each trajectory in data
@@ -63,7 +63,8 @@ T_out = T_in + T
 step = 1 # Seconds to learn solution operator
 
 t1 = default_timer()
-data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
+#data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
+data = np.load('/ngc_workspace/jiawei/datasets/NS_Re5000_256')
 #data = np.load('/home/robert/data/2D_NS_Re5000.npy?download=1')
 data = torch.tensor(data, dtype=torch.float)[..., ::sub, ::sub]
 
