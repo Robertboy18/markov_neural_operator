@@ -31,7 +31,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='baseline64-64'
+    name='baseline64-128'
 )
 # Main
 ntrain = 90
@@ -118,7 +118,7 @@ trainer = Trainer(model, n_epochs=50,
                   log_test_interval=3,
                   use_distributed=False,
                   verbose=True, dataset_name='Re5000',
-                  incremental_resolution=True)
+                  incremental_resolution=False)
 
 
 trainer.train(train_loader, test_loader,
