@@ -46,7 +46,7 @@ out_dim = 1
 batch_size = 10
 epochs = 50
 learning_rate = 0.001
-scheduler_step = 100
+scheduler_step = 10
 scheduler_gamma = 0.5
 
 loss_k = 0 # H0 Sobolev loss = L2 loss
