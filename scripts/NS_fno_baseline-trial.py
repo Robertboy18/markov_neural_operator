@@ -31,7 +31,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='baseline64-32'
+    name='baseline64-64'
 )
 # Main
 ntrain = 90
