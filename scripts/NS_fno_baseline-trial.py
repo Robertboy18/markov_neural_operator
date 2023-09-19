@@ -43,7 +43,7 @@ width = 128
 in_dim = 1
 out_dim = 1
 
-batch_size = 10
+batch_size = 1
 epochs = 50
 learning_rate = 0.001
 scheduler_step = 100
