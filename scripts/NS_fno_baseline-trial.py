@@ -37,13 +37,13 @@ wandb.init(
 ntrain = 90
 ntest = 10
 
-modes = 128
+modes = 64
 width = 128
 
 in_dim = 1
 out_dim = 1
 
-batch_size = 1
+batch_size = 10
 epochs = 50
 learning_rate = 0.001
 scheduler_step = 100
