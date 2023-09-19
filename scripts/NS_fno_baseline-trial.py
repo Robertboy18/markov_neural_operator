@@ -31,13 +31,13 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='lossgap-128modes-256'
+    name='baseline128-32'
 )
 # Main
 ntrain = 90
 ntest = 10
 
-modes = 64
+modes = 128
 width = 128
 
 in_dim = 1
@@ -55,7 +55,7 @@ loss_group = True
 print(epochs, learning_rate, scheduler_step, scheduler_gamma)
 
 sub = 1 # spatial subsample
-S = 256
+S = 128
 
 T_in = 100 # skip first 100 seconds of each trajectory to let trajectory reach attractor
 T = 400 # seconds to extract from each trajectory in data
@@ -63,8 +63,8 @@ T_out = T_in + T
 step = 1 # Seconds to learn solution operator
 
 t1 = default_timer()
-#data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
-data = np.load('/ngc_workspace/jiawei/datasets/NS_Re5000_256')
+data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
+#data = np.load('/ngc_workspace/jiawei/datasets/NS_Re5000_256')
 #data = np.load('/home/robert/data/2D_NS_Re5000.npy?download=1')
 data = torch.tensor(data, dtype=torch.float)[..., ::sub, ::sub]
 
@@ -111,14 +111,14 @@ print(f'\n * Test: {eval_losses}')
 sys.stdout.flush()
 
 
-trainer = Trainer(model, n_epochs=500,
+trainer = Trainer(model, n_epochs=50,
                   device=device,
                   mg_patching_levels=0,
                   wandb_log=True,
                   log_test_interval=3,
                   use_distributed=False,
                   verbose=True, dataset_name='Re5000',
-                  incremental_loss_gap=True)
+                  incremental_resolution=True)
 
 
 trainer.train(train_loader, test_loader,
