@@ -31,13 +31,13 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='baseline128-32'
+    name='baseline32-32'
 )
 # Main
 ntrain = 90
 ntest = 10
 
-modes = 128
+modes = 32
 width = 128
 
 in_dim = 1
