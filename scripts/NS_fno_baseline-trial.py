@@ -22,6 +22,7 @@ from models.fno_2d import *
 
 from timeit import default_timer
 import scipy.io
+import argparse  # Import the argparse library
 
 torch.manual_seed(0)
 np.random.seed(0)
@@ -33,11 +34,24 @@ wandb.init(
     project='re5000',
     name='resolution-128'
 )
+
+# Create an ArgumentParser object
+parser = argparse.ArgumentParser(description='Your script description here')
+
+# Add command line arguments for 'epochs' and 'modes'
+parser.add_argument('--res', type=bool, default=False, help='res')
+parser.add_argument('--loss', type=bool, default=False, help='loss')
+parser.add_argument('--grad', type=bool, default=False, help='grad')
+parser.add_argument('--modes', type=int, default=128, help='Number of modes')
+
+# Parse the command line arguments
+args = parser.parse_args()
+
 # Main
 ntrain = 90
 ntest = 10
 
-modes = 128
+modes = args.modes
 width = 128
 
 in_dim = 1
@@ -118,7 +132,7 @@ trainer = Trainer(model, n_epochs=50,
                   log_test_interval=3,
                   use_distributed=False,
                   verbose=True, dataset_name='Re5000',
-                  incremental_resolution=True)
+                  incremental_resolution=args.res, incremental_loss_gap=args.loss, incremental_grad=args.grad)
 
 
 trainer.train(train_loader, test_loader,
