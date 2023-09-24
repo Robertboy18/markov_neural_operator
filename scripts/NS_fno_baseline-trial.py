@@ -12,6 +12,7 @@ from neuralop.models import TFNO, FNO2d
 from neuralop import Trainer
 from neuralop.utils import count_params
 from neuralop import LpLoss, H1Loss
+from configmypy import ConfigPipeline, YamlConfig, ArgparseConfig
 
 import sys
 sys.path.append('../')
@@ -36,22 +37,27 @@ wandb.init(
 )
 
 # Create an ArgumentParser object
-parser = argparse.ArgumentParser(description='Your script description here')
+# Read the configuration
+config_name = 'default'
+pipe = ConfigPipeline([YamlConfig('./incremental.yaml', config_name='default', config_folder='../scripts/config'),
+                       ArgparseConfig(infer_types=True, config_name=None, config_file=None),
+                       YamlConfig(config_folder='../scripts/config')
+                      ])
+config = pipe.read_conf()
+config_name = pipe.steps[-1].config_name
 
-# Add command line arguments for 'epochs' and 'modes'
-parser.add_argument('--res', type=bool, default=False, help='res')
-parser.add_argument('--loss', type=bool, default=False, help='loss')
-parser.add_argument('--grad', type=bool, default=False, help='grad')
-parser.add_argument('--modes', type=int, default=128, help='Number of modes')
+# Make sure we only print information when needed
+config.verbose = config.verbose
 
-# Parse the command line arguments
-args = parser.parse_args()
+#Print config to screen
+if config.verbose:
+    pipe.log()
+    sys.stdout.flush()
 
 # Main
 ntrain = 90
 ntest = 10
 
-modes = args.modes
 width = 128
 
 in_dim = 1
@@ -101,7 +107,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(modes, modes), hidden_channels=width, in_channels=1, out_channels=1)
+model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1)
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
@@ -114,6 +120,22 @@ h1loss = HsLoss(k=1, group=False, size_average=False)
 h2loss = HsLoss(k=2, group=False, size_average=False)
 myloss = HsLoss(k=loss_k, group=loss_group, size_average=False)
 
+#Log parameter count
+n_params = count_params(model)
+
+if config.verbose:
+    print(f'\nn_params: {n_params}')
+    sys.stdout.flush()
+
+if config.wandb.log:
+    to_log = {'n_params': n_params}
+    if config.n_params_baseline is not None:
+        to_log['n_params_baseline'] = config.n_params_baseline,
+        to_log['compression_ratio'] = config.n_params_baseline/n_params,
+        to_log['space_savings'] = 1 - (n_params/config.n_params_baseline)
+    wandb.log(to_log)
+    wandb.watch(model)
+
 train_loss=myloss
 eval_losses={'h1': h1loss, 'l2': lploss, 'h2': h2loss}
 print('\n### MODEL ###\n', model)
@@ -123,16 +145,18 @@ print('\n### LOSSES ###')
 print(f'\n * Train: {train_loss}')
 print(f'\n * Test: {eval_losses}')
 sys.stdout.flush()
-
-
-trainer = Trainer(model, n_epochs=50,
+trainer = Trainer(model, n_epochs=config.opt.n_epochs,
                   device=device,
-                  mg_patching_levels=0,
-                  wandb_log=True,
-                  log_test_interval=3,
-                  use_distributed=False,
-                  verbose=True, dataset_name='Re5000',
-                  incremental_resolution=args.res, incremental_loss_gap=args.loss, incremental_grad=args.grad)
+                  mg_patching_levels=config.patching.levels,
+                  mg_patching_padding=config.patching.padding,
+                  mg_patching_stitching=config.patching.stitching,
+                  wandb_log=config.wandb.log,
+                  log_test_interval=config.wandb.log_test_interval,
+                  log_output=config.wandb.log_output,
+                  use_distributed=config.distributed.use_distributed,
+                  verbose=config.verbose, incremental = config.incremental.incremental_grad.use, 
+                  incremental_loss_gap=config.incremental.incremental_loss_gap.use, 
+                  incremental_resolution=config.incremental.incremental_resolution.use, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
 
 
 trainer.train(train_loader, test_loader,
@@ -144,5 +168,5 @@ trainer.train(train_loader, test_loader,
               training_loss=train_loss,
               eval_losses=eval_losses)
 
-wandb.finish()
-
+if config.wandb.log:
+    wandb.finish()
