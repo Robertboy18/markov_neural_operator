@@ -76,7 +76,7 @@ default: &DEFAULT
       eps: 0.001
 
     incremental_resolution:
-      use: True
+      use: False
       epoch_gap: 1
 
     dataset:

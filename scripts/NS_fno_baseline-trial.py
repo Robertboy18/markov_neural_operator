@@ -107,7 +107,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(128, 128), hidden_channels=width, in_channels=1, out_channels=1)
+model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1)
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
