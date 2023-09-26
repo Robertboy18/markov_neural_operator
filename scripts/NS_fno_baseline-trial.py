@@ -33,7 +33,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='resolution-64'
+    name='baseline-128-new'
 )
 
 # Create an ArgumentParser object
@@ -107,7 +107,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1)
+model = FNO(n_modes=(128, 128), hidden_channels=width, in_channels=1, out_channels=1)
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
