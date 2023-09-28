@@ -37,7 +37,7 @@ default: &DEFAULT
 
   # Optimizer
   opt:
-    n_epochs: 5
+    n_epochs: 50
     learning_rate: 1e-3
     training_loss: 'h1'
     weight_decay: 1e-4
@@ -77,7 +77,7 @@ default: &DEFAULT
 
     incremental_resolution:
       use: True
-      epoch_gap: 1
+      epoch_gap: 10
 
     dataset:
       SmallDarcy: [1]
