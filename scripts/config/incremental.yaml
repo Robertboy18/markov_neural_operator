@@ -43,7 +43,7 @@ default: &DEFAULT
     weight_decay: 1e-4
     amp_autocast: False
 
-    scheduler: 'StepLR' #'StepLR' # Or 'CosineAnnealingLR' OR 'ReduceLROnPlateau'
+    scheduler: 'CyclicLR' #'StepLR' # Or 'CosineAnnealingLR' OR 'ReduceLROnPlateau'
     step_size: 150
     gamma: 0.5
     base_lr: 1e-3
@@ -51,8 +51,8 @@ default: &DEFAULT
     cycle_momentum: False
     mode: "triangular2"
     last_epoch: -1
-    step_size_up: 50 # 120 * 100 //2 
-    step_size_down: 50
+    step_size_up: 5 # 120 * 100 //2 
+    step_size_down: 5
 
   # Patching
   patching:
