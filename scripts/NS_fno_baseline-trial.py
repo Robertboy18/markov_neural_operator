@@ -13,6 +13,7 @@ from neuralop import Trainer
 from neuralop.utils import count_params
 from neuralop import LpLoss, H1Loss
 from configmypy import ConfigPipeline, YamlConfig, ArgparseConfig
+from neuralop.training import OutputEncoderCallback
 
 import sys
 sys.path.append('../')
@@ -28,13 +29,13 @@ import argparse  # Import the argparse library
 torch.manual_seed(0)
 np.random.seed(0)
 
-wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
+#wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 
-wandb.init(
-    entity='research-pino_ifno',
-    project='re5000',
-    name='resolution-128-new-frequency-res-10gap'
-)
+# wandb.init(
+#     entity='research-pino_ifno',
+#     project='re5000',
+#     name='resolution-128-new-frequency-res-10gap'
+# )
 
 # Create an ArgumentParser object
 # Read the configuration
@@ -83,9 +84,9 @@ T_out = T_in + T
 step = 1 # Seconds to learn solution operator
 
 t1 = default_timer()
-data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
+#data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
 #data = np.load('/ngc_workspace/jiawei/datasets/NS_Re5000_256')
-#data = np.load('/home/robert/data/2D_NS_Re5000.npy?download=1')
+data = np.load('/home/robert/data/2D_NS_Re5000.npy?download=1')
 data = torch.tensor(data, dtype=torch.float)[..., ::sub, ::sub]
 
 train_a = data[:ntrain,T_in-1:T_out-1].reshape(ntrain*T, S, S)
@@ -107,7 +108,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(128, 128), hidden_channels=width, in_channels=1, out_channels=1)
+model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1, incremental_n_modes=(64, 64))
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
@@ -146,26 +147,23 @@ print('\n### LOSSES ###')
 print(f'\n * Train: {train_loss}')
 print(f'\n * Test: {eval_losses}')
 sys.stdout.flush()
-trainer = Trainer(model, n_epochs=config.opt.n_epochs,
+okay = None
+encoder = None
+trainer = Trainer(model = model, n_epochs=config.opt.n_epochs,
                   device=device,
-                  mg_patching_levels=config.patching.levels,
-                  mg_patching_padding=config.patching.padding,
-                  mg_patching_stitching=config.patching.stitching,
                   wandb_log=config.wandb.log,
+                  callbacks=[OutputEncoderCallback(encoder)],
                   log_test_interval=config.wandb.log_test_interval,
                   log_output=config.wandb.log_output,
                   use_distributed=config.distributed.use_distributed,
                   verbose=config.verbose, incremental = config.incremental.incremental_grad.use, 
                   incremental_loss_gap=config.incremental.incremental_loss_gap.use, 
-                  incremental_resolution=config.incremental.incremental_resolution.use, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
+                  incremental_resolution=True, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
 
 
-trainer.train(train_loader, test_loader,
-              output_encoder,
-              model,
-              optimizer,
-              scheduler,
-              regularizer=False,
+trainer.train(train_loader=train_loader, test_loaders=test_loader, regularizer=None,
+              optimizer=optimizer,
+              scheduler=scheduler,
               training_loss=train_loss,
               eval_losses=eval_losses)
 

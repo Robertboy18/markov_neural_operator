@@ -88,7 +88,7 @@ default: &DEFAULT
 
   # Weights and biases
   wandb:
-    log: True
+    log: False
     name: turbulence-1timestep-128-128 # If None, config will be used but you can override it here
     group: '' 
     project: "turbulence"
