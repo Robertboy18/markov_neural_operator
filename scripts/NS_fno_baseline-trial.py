@@ -13,7 +13,7 @@ from neuralop import Trainer
 from neuralop.utils import count_params
 from neuralop import LpLoss, H1Loss
 from configmypy import ConfigPipeline, YamlConfig, ArgparseConfig
-from neuralop.training import OutputEncoderCallback
+from neuralop.training import OutputEncoderCallback, SimpleWandBLoggerCallback
 
 import sys
 sys.path.append('../')
@@ -29,13 +29,13 @@ import argparse  # Import the argparse library
 torch.manual_seed(0)
 np.random.seed(0)
 
-#wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
+wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 
-# wandb.init(
-#     entity='research-pino_ifno',
-#     project='re5000',
-#     name='resolution-128-new-frequency-res-10gap'
-# )
+wandb.init(
+    entity='research-pino_ifno',
+    project='re5000',
+    name='resolution-128-fixall-res-10gap'
+)
 
 # Create an ArgumentParser object
 # Read the configuration
@@ -108,7 +108,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(64, 64), hidden_channels=width, in_channels=1, out_channels=1, incremental_n_modes=(64, 64))
+model = FNO(n_modes=(128, 128), hidden_channels=width, n_layers=4, in_channels=1, out_channels=1, incremental_n_modes=(128, 128))
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
@@ -152,7 +152,7 @@ encoder = None
 trainer = Trainer(model = model, n_epochs=config.opt.n_epochs,
                   device=device,
                   wandb_log=config.wandb.log,
-                  callbacks=[OutputEncoderCallback(encoder)],
+                  callbacks=[SimpleWandBLoggerCallback()],
                   log_test_interval=config.wandb.log_test_interval,
                   log_output=config.wandb.log_output,
                   use_distributed=config.distributed.use_distributed,
