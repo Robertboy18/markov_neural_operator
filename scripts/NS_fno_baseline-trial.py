@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='resolution-128-fixall-res-10gap'
+    name='resolution-32modes-128-resolution-fix'
 )
 
 # Create an ArgumentParser object
@@ -158,7 +158,7 @@ trainer = Trainer(model = model, n_epochs=config.opt.n_epochs,
                   use_distributed=config.distributed.use_distributed,
                   verbose=config.verbose, incremental = config.incremental.incremental_grad.use, 
                   incremental_loss_gap=config.incremental.incremental_loss_gap.use, 
-                  incremental_resolution=True, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
+                  incremental_resolution=False, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
 
 
 trainer.train(train_loader=train_loader, test_loaders=test_loader, regularizer=None,
