@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='resolution-32modes-128-incremental-resolution-baseline'
+    name='incremental-resolution-final-run'
 )
 
 # Create an ArgumentParser object
@@ -59,14 +59,14 @@ if config.verbose:
 ntrain = 90
 ntest = 10
 
-width = 128
+width = 64
 
 in_dim = 1
 out_dim = 1
 
 batch_size = 10
 epochs = 50
-learning_rate = 0.001
+learning_rate = 0.0005
 scheduler_step = 10
 scheduler_gamma = 0.5
 
@@ -108,7 +108,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(32, 32), hidden_channels=width, n_layers=4, in_channels=1, out_channels=1)
+model = FNO(n_modes=(128, 128), hidden_channels=width, n_layers=4, in_channels=1, out_channels=1, incremental_n_modes=(128, 128))
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
