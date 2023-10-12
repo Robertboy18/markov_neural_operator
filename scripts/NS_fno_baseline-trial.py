@@ -59,14 +59,14 @@ if config.verbose:
 ntrain = 90
 ntest = 10
 
-width = 64
+width = 128
 
 in_dim = 1
 out_dim = 1
 
 batch_size = 10
 epochs = 50
-learning_rate = 0.0005
+learning_rate = 0.001
 scheduler_step = 10
 scheduler_gamma = 0.5
 
