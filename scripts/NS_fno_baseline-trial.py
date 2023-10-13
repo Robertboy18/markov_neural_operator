@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='incremental-resolution-final-run-10epoch-cyclicLR'
+    name='incremental-resolution-final-run-bagmix-10epoch-64aswell'
 )
 
 # Create an ArgumentParser object
@@ -114,8 +114,8 @@ model.to(device)
 print(count_params(model))
 
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-4)
-#scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step, gamma=scheduler_gamma)
-scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer,step_size_down=config.opt.step_size_down,base_lr=config.opt.base_lr,max_lr=config.opt.max_lr,step_size_up=config.opt.step_size_up,mode=config.opt.mode,last_epoch=-1,cycle_momentum=False)
+scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step, gamma=scheduler_gamma)
+#scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer,step_size_down=config.opt.step_size_down,base_lr=config.opt.base_lr,max_lr=config.opt.max_lr,step_size_up=config.opt.step_size_up,mode=config.opt.mode,last_epoch=-1,cycle_momentum=False)
 
 lploss = LpLoss(size_average=False)
 h1loss = HsLoss(k=1, group=False, size_average=False)
