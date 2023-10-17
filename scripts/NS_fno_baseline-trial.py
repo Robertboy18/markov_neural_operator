@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='incremental-resolution-final-run-cosine'
+    name='incremental-resolution-final-run-20gap'
 )
 
 # Create an ArgumentParser object
@@ -65,7 +65,7 @@ in_dim = 1
 out_dim = 1
 
 batch_size = 10
-epochs = 50
+epochs = 200
 learning_rate = 0.001
 scheduler_step = 10
 scheduler_gamma = 0.5
@@ -114,7 +114,7 @@ model.to(device)
 print(count_params(model))
 
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=1e-4)
-#scheduler1 = torch.optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step, gamma=scheduler_gamma)
+scheduler1 = torch.optim.lr_scheduler.StepLR(optimizer, step_size=scheduler_step, gamma=scheduler_gamma)
 scheduler = torch.optim.lr_scheduler.CyclicLR(optimizer,step_size_down=config.opt.step_size_down,base_lr=config.opt.base_lr,max_lr=config.opt.max_lr,step_size_up=config.opt.step_size_up,mode=config.opt.mode,last_epoch=-1,cycle_momentum=False)
 scheduler2 = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=5)
 
@@ -164,7 +164,7 @@ trainer = Trainer(model = model, n_epochs=config.opt.n_epochs,
 
 trainer.train(train_loader=train_loader, test_loaders=test_loader, regularizer=None,
               optimizer=optimizer,
-              scheduler=[scheduler2, scheduler],
+              scheduler=[scheduler, scheduler],
               training_loss=train_loss,
               eval_losses=eval_losses)
 
