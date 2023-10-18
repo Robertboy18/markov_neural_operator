@@ -164,7 +164,7 @@ trainer = Trainer(model = model, n_epochs=epochs,
 
 trainer.train(train_loader=train_loader, test_loaders=test_loader, regularizer=None,
               optimizer=optimizer,
-              scheduler=[scheduler, scheduler],
+              scheduler=[scheduler1, scheduler1],
               training_loss=train_loss,
               eval_losses=eval_losses)
 
