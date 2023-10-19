@@ -84,9 +84,9 @@ T_out = T_in + T
 step = 1 # Seconds to learn solution operator
 
 t1 = default_timer()
-#data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
+data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
 #data = np.load('/ngc_workspace/jiawei/datasets/NS_Re5000_256')
-data = np.load('/home/robert/data/2D_NS_Re5000.npy?download=1')
+#data = np.load('/home/robert/data/2D_NS_Re5000.npy?download=1')
 data = torch.tensor(data, dtype=torch.float)[..., ::sub, ::sub]
 
 train_a = data[:ntrain,T_in-1:T_out-1].reshape(ntrain*T, S, S)
@@ -108,7 +108,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(128, 128), hidden_channels=width, n_layers=4, in_channels=1, out_channels=1)
+model = FNO(n_modes=(128, 128), hidden_channels=width, n_layers=4, in_channels=1, out_channels=1, incremental_n_modes=(2,2))
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
@@ -157,7 +157,7 @@ trainer = Trainer(model = model, n_epochs=epochs,
                   log_test_interval=config.wandb.log_test_interval,
                   log_output=config.wandb.log_output,
                   use_distributed=config.distributed.use_distributed,
-                  verbose=config.verbose, incremental = config.incremental.incremental_grad.use, 
+                  verbose=config.verbose, incremental = False, 
                   incremental_loss_gap=True, 
                   incremental_resolution=True, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
 
