@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='joint-incremental-run-50-epoch'
+    name='baseline-final-run-200-steplr-25'
 )
 
 # Create an ArgumentParser object
@@ -108,7 +108,7 @@ device = torch.device('cuda')
 
 # Model
 #model = Net2d(in_dim, out_dim, S, modes, width).cuda()
-model = FNO(n_modes=(128, 128), hidden_channels=width, n_layers=4, in_channels=1, out_channels=1, incremental_n_modes=(2, 2))
+model = FNO(n_modes=(128, 128), hidden_channels=width, n_layers=4, in_channels=1, out_channels=1)
 #model = FNO2d(n_modes_height=modes, n_modes_width=modes, hidden_channels=width, in_channels=1, out_channels=1)
 model.to(device)
 print(count_params(model))
@@ -158,13 +158,13 @@ trainer = Trainer(model = model, n_epochs=epochs,
                   log_output=config.wandb.log_output,
                   use_distributed=config.distributed.use_distributed,
                   verbose=config.verbose, incremental = config.incremental.incremental_grad.use, 
-                  incremental_loss_gap=True, 
-                  incremental_resolution=True, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
+                  incremental_loss_gap=False, 
+                  incremental_resolution=False, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
 
 
 trainer.train(train_loader=train_loader, test_loaders=test_loader, regularizer=None,
               optimizer=optimizer,
-              scheduler=[scheduler, scheduler],
+              scheduler=[scheduler1, scheduler1],
               training_loss=train_loss,
               eval_losses=eval_losses)
 
