@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='incremental-final-run-200-steplr-10-stepsize'
+    name='lossgap-final-run-200-steplr-10-stepsize'
 )
 
 # Create an ArgumentParser object
@@ -157,8 +157,8 @@ trainer = Trainer(model = model, n_epochs=epochs,
                   log_test_interval=config.wandb.log_test_interval,
                   log_output=config.wandb.log_output,
                   use_distributed=config.distributed.use_distributed,
-                  verbose=config.verbose, incremental = True, 
-                  incremental_loss_gap=False, 
+                  verbose=config.verbose, incremental = False, 
+                  incremental_loss_gap=True, 
                   incremental_resolution=False, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
 
 
