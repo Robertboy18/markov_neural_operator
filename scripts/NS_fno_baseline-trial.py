@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='baseline-final-run-200-steplr-25'
+    name='baseline-final-run-200-steplr-25-stepsize'
 )
 
 # Create an ArgumentParser object
@@ -67,7 +67,7 @@ out_dim = 1
 batch_size = 10
 epochs = 200
 learning_rate = 0.001
-scheduler_step = 10
+scheduler_step = 25
 scheduler_gamma = 0.5
 
 loss_k = 0 # H0 Sobolev loss = L2 loss
