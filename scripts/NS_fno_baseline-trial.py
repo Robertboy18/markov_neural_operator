@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='incremental-resolution-final-run-200-steplr-baseline'
+    name='incremental-resolution-final-run-200-pretraining32-finetuning128-20epochs'
 )
 
 # Create an ArgumentParser object
@@ -164,7 +164,7 @@ trainer = Trainer(model = model, n_epochs=epochs,
 
 trainer.train(train_loader=train_loader, test_loaders=test_loader, regularizer=None,
               optimizer=optimizer,
-              scheduler=[scheduler1, scheduler1],
+              scheduler=[scheduler, scheduler1],
               training_loss=train_loss,
               eval_losses=eval_losses)
 
