@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='incremental-resolution-final-run-mixscheduler-50epochs'
+    name='joint-incremental-lossgap-final-run-mixscheduler-50epochs'
 )
 
 # Create an ArgumentParser object
@@ -158,7 +158,7 @@ trainer = Trainer(model = model, n_epochs=epochs,
                   log_output=config.wandb.log_output,
                   use_distributed=config.distributed.use_distributed,
                   verbose=config.verbose, incremental = False, 
-                  incremental_loss_gap=False, 
+                  incremental_loss_gap=True, 
                   incremental_resolution=True, dataset_name="Re5000", save_interval=config.checkpoint.interval, model_save_dir=config.checkpoint.directory + config.checkpoint.name)
 
 
