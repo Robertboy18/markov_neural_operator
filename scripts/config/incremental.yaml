@@ -46,13 +46,13 @@ default: &DEFAULT
     scheduler: 'CyclicLR' #'StepLR' # Or 'CosineAnnealingLR' OR 'ReduceLROnPlateau'
     step_size: 150
     gamma: 0.5
-    base_lr: 1e-3
-    max_lr: 1e-2
+    base_lr: 1e-6
+    max_lr: 1e-3
     cycle_momentum: False
     mode: "triangular2"
     last_epoch: -1
-    step_size_up: 15 # 120 * 100 //2 
-    step_size_down: 15
+    step_size_up: 25 # 120 * 100 //2 
+    step_size_down: 25
 
   # Patching
   patching:
