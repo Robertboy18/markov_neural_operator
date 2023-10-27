@@ -34,7 +34,7 @@ wandb.login(key='0d28fab247b1d30084a6ea7af891401bb5d1c20e')
 wandb.init(
     entity='research-pino_ifno',
     project='re5000',
-    name='incremental-resolution-final-run-steplr-50stepsize'
+    name='incremental-resolution-final-run-50maxepochs-mixscheduler'
 )
 
 # Create an ArgumentParser object
@@ -65,9 +65,9 @@ in_dim = 1
 out_dim = 1
 
 batch_size = 10
-epochs = 200
+epochs = 50
 learning_rate = 0.001
-scheduler_step = 50
+scheduler_step = 10
 scheduler_gamma = 0.5
 
 loss_k = 0 # H0 Sobolev loss = L2 loss
@@ -84,9 +84,9 @@ T_out = T_in + T
 step = 1 # Seconds to learn solution operator
 
 t1 = default_timer()
-data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
+#data = np.load('/ngc_workspace/jiawei/datasets/2D_NS_Re5000.npy?download=1')
 #data = np.load('/ngc_workspace/jiawei/datasets/NS_Re5000_256')
-#data = np.load('/home/robert/data/2D_NS_Re5000.npy?download=1')
+data = np.load('/home/robert/data/2D_NS_Re5000.npy?download=1')
 data = torch.tensor(data, dtype=torch.float)[..., ::sub, ::sub]
 
 train_a = data[:ntrain,T_in-1:T_out-1].reshape(ntrain*T, S, S)
@@ -164,7 +164,7 @@ trainer = Trainer(model = model, n_epochs=epochs,
 
 trainer.train(train_loader=train_loader, test_loaders=test_loader, regularizer=None,
               optimizer=optimizer,
-              scheduler=[scheduler1, scheduler1],
+              scheduler=[scheduler1, scheduler],
               training_loss=train_loss,
               eval_losses=eval_losses)
 
